@@ -33,6 +33,12 @@ public class PostRepository {
         return post;
     }
 
+    public Optional<LocalDateTime> getLastPublicationDate(Post post) {
+        String keyDates = "post:" + post.getId() + ":publicationDates";
+        return Optional.ofNullable(jedis.lindex(keyDates, 0))
+                .map(str -> LocalDateTime.parse(str, DATE_FORMATTER));
+    }
+
     public void markPostAsPublished(Post post, LocalDateTime date) {
         String keyDates = "post:" + post.getId() + ":publicationDates";
         String value = DATE_FORMATTER.format(date);

@@ -24,6 +24,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -104,12 +106,11 @@ public class TwitterService {
                 .setPublicationText(s.getText())
                 .build();
 
-        postRepository.setPublicationText(post, s.getText());
-
-        boolean markedAsPublished = postRepository.getPublicationDates(post)
-                .stream()
-                .anyMatch(d -> Math.abs(Duration.between(d, post.getPostDate()).toMillis()) < 60 * 1000);
-        if (markedAsPublished == false) {
+        Optional<LocalDateTime> lastPublicationDateOpt = postRepository.getLastPublicationDate(post);
+        // only reconcile if the tweet is more recent than the last publication (with a small delta)
+        if(lastPublicationDateOpt.isPresent() == false
+                || post.getPostDate().isAfter(lastPublicationDateOpt.get().plusMinutes(1))) {
+            postRepository.setPublicationText(post, s.getText());
             postRepository.markPostAsPublished(post, post.getPostDate());
         }
     }
