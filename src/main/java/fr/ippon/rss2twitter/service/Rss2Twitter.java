@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -72,7 +71,7 @@ public class Rss2Twitter {
         }
 
         ZonedDateTime lastPublicationDate = repository.getLastPublicationDate();
-        Duration lastPublicationAge = Duration.between(lastPublicationDate, LocalDateTime.now());
+        Duration lastPublicationAge = Duration.between(lastPublicationDate, ZonedDateTime.now());
         if (lastPublicationAge.toMinutes() >= publicationRateInMinutes) {
             //if (lastPublicationAge.toMillis() >= 10000) {
             logger.info("Found post to publish (delay reached)");
@@ -87,7 +86,7 @@ public class Rss2Twitter {
     }
 
     private boolean retainEntry(Post post) {
-        Duration age = Duration.between(post.getPostDate(), LocalDateTime.now());
+        Duration age = Duration.between(post.getPostDate(), ZonedDateTime.now());
         return age.toDays() <= maxAgeInDays;
     }
 
@@ -97,7 +96,7 @@ public class Rss2Twitter {
                 .findFirst()
                 .filter(post -> post.getPublicationCount() == 0)
                 .filter(post -> Duration.between(post.getPostDate(),
-                        LocalDateTime.now()).toMinutes() < minutesToWaitBeforePublishing);
+                        ZonedDateTime.now()).toMinutes() < minutesToWaitBeforePublishing);
     }
 
     private Optional<Post> findBestPostToPublish(List<Post> posts) {

@@ -23,8 +23,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -109,7 +107,7 @@ public class TwitterService {
 
         Optional<ZonedDateTime> lastPublicationDateOpt = postRepository.getLastPublicationDate(post);
         // only reconcile if the tweet is more recent than the last publication (with a small delta)
-        if(lastPublicationDateOpt.isPresent() == false
+        if (lastPublicationDateOpt.isPresent() == false
                 || post.getPostDate().isAfter(lastPublicationDateOpt.get().plusMinutes(1))) {
             postRepository.setPublicationText(post, s.getText());
             postRepository.markPostAsPublished(post, post.getPostDate());
