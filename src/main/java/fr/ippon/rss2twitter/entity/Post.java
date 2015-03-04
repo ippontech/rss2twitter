@@ -1,8 +1,8 @@
 package fr.ippon.rss2twitter.entity;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class Post {
@@ -11,13 +11,13 @@ public class Post {
     private String link;
     private String title;
     private String author;
-    private LocalDateTime postDate;
+    private ZonedDateTime postDate;
 
     private int publicationCount;
-    private LocalDateTime lastPublicationDate;
+    private ZonedDateTime lastPublicationDate;
     private String publicationText;
 
-    private Post(String id, String link, String title, String author, LocalDateTime postDate) {
+    private Post(String id, String link, String title, String author, ZonedDateTime postDate) {
         this.id = id;
         this.link = link;
         this.title = title;
@@ -41,7 +41,7 @@ public class Post {
         return author;
     }
 
-    public LocalDateTime getPostDate() {
+    public ZonedDateTime getPostDate() {
         return postDate;
     }
 
@@ -53,11 +53,11 @@ public class Post {
         this.publicationCount = publicationCount;
     }
 
-    public LocalDateTime getLastPublicationDate() {
+    public ZonedDateTime getLastPublicationDate() {
         return lastPublicationDate;
     }
 
-    public void setLastPublicationDate(LocalDateTime lastPublicationDate) {
+    public void setLastPublicationDate(ZonedDateTime lastPublicationDate) {
         this.lastPublicationDate = lastPublicationDate;
     }
 
@@ -74,7 +74,7 @@ public class Post {
         private String link;
         private String title;
         private String author;
-        private LocalDateTime postDate;
+        private ZonedDateTime postDate;
         private String publicationText;
 
         public PostBuilder(String link) {
@@ -91,14 +91,14 @@ public class Post {
             return this;
         }
 
-        public PostBuilder setPostDate(LocalDateTime postDate) {
+        public PostBuilder setPostDate(ZonedDateTime postDate) {
             this.postDate = postDate;
             return this;
         }
 
         public PostBuilder setPostDate(Date postDate) {
             Instant instant = Instant.ofEpochMilli(postDate.getTime());
-            this.postDate = LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+            this.postDate = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
             return this;
         }
 

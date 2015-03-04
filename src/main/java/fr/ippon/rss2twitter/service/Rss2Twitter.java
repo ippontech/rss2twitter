@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -70,7 +71,7 @@ public class Rss2Twitter {
             return;
         }
 
-        LocalDateTime lastPublicationDate = repository.getLastPublicationDate();
+        ZonedDateTime lastPublicationDate = repository.getLastPublicationDate();
         Duration lastPublicationAge = Duration.between(lastPublicationDate, LocalDateTime.now());
         if (lastPublicationAge.toMinutes() >= publicationRateInMinutes) {
             //if (lastPublicationAge.toMillis() >= 10000) {
@@ -122,7 +123,7 @@ public class Rss2Twitter {
             return;
         }
 
-        LocalDateTime now = LocalDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
         repository.markPostAsPublished(post, now);
         repository.setLastPublicationDate(now);
     }

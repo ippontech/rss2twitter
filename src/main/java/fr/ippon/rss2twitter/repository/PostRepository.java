@@ -5,8 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import redis.clients.jedis.Jedis;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,12 +18,20 @@ public class PostRepository {
     @Autowired
     private Jedis jedis;
 
-    private static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_DATE_TIME;
+    private static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
+    private static ZonedDateTime parseDate(String dateStr) {
+        return ZonedDateTime.parse(dateStr, DATE_FORMATTER);
+    }
+
+    private static String formatDate(ZonedDateTime date) {
+        return date.truncatedTo(ChronoUnit.SECONDS).format(DATE_FORMATTER);
+    }
 
     public Post retrievePublicationDetails(Post post) {
         String keyDates = "post:" + post.getId() + ":publicationDates";
         Optional.ofNullable(jedis.lindex(keyDates, 0))
-                .map(str -> LocalDateTime.parse(str, DATE_FORMATTER))
+                .map(str -> parseDate(str))
                 .ifPresent(v -> post.setLastPublicationDate(v));
 
         String keyCount = "post:" + post.getId() + ":publicationCount";
@@ -33,39 +42,39 @@ public class PostRepository {
         return post;
     }
 
-    public Optional<LocalDateTime> getLastPublicationDate(Post post) {
+    public Optional<ZonedDateTime> getLastPublicationDate(Post post) {
         String keyDates = "post:" + post.getId() + ":publicationDates";
         return Optional.ofNullable(jedis.lindex(keyDates, 0))
-                .map(str -> LocalDateTime.parse(str, DATE_FORMATTER));
+                .map(str -> parseDate(str));
     }
 
-    public void markPostAsPublished(Post post, LocalDateTime date) {
+    public void markPostAsPublished(Post post, ZonedDateTime date) {
         String keyDates = "post:" + post.getId() + ":publicationDates";
-        String value = DATE_FORMATTER.format(date);
+        String value = formatDate(date);
         jedis.lpush(keyDates, value);
 
         String keyCount = "post:" + post.getId() + ":publicationCount";
         jedis.incr(keyCount);
     }
 
-    public LocalDateTime getLastPublicationDate() {
+    public ZonedDateTime getLastPublicationDate() {
         String key = "lastPublicationDate";
         return Optional.ofNullable(jedis.get(key))
-                .map(str -> LocalDateTime.parse(str, DATE_FORMATTER))
+                .map(str -> parseDate(str))
                 .orElse(null);
     }
 
-    public void setLastPublicationDate(LocalDateTime date) {
+    public void setLastPublicationDate(ZonedDateTime date) {
         String key = "lastPublicationDate";
-        String value = DATE_FORMATTER.format(date);
+        String value = formatDate(date);
         jedis.set(key, value);
     }
 
-    public List<LocalDateTime> getPublicationDates(Post post) {
+    public List<ZonedDateTime> getPublicationDates(Post post) {
         String keyDates = "post:" + post.getId() + ":publicationDates";
         return jedis.lrange(keyDates, 0, -1)
                 .stream()
-                .map(str -> LocalDateTime.parse(str, DATE_FORMATTER))
+                .map(str -> parseDate(str))
                 .collect(Collectors.toList());
     }
 
