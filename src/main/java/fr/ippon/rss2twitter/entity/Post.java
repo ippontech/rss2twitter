@@ -15,6 +15,7 @@ public class Post {
 
     private int publicationCount;
     private ZonedDateTime lastPublicationDate;
+    private ZonedDateTime maxPublicationDate;
     private String publicationText;
 
     private Post(String id, String link, String title, String author, ZonedDateTime postDate) {
@@ -67,6 +68,14 @@ public class Post {
 
     public void setPublicationText(String publicationText) {
         this.publicationText = publicationText;
+    }
+
+    public ZonedDateTime getMaxPublicationDate() {
+        return maxPublicationDate;
+    }
+
+    public void setMaxPublicationDate(ZonedDateTime maxPublicationDate) {
+        this.maxPublicationDate = maxPublicationDate;
     }
 
     public static class PostBuilder {

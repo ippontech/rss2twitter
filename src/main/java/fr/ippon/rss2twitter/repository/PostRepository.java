@@ -39,6 +39,11 @@ public class PostRepository {
                 .map(str -> Integer.valueOf(str))
                 .ifPresent(v -> post.setPublicationCount(v));
 
+        String keyMaxPublicationDate = "post:" + post.getId() + ":maxPublicationDate";
+        Optional.ofNullable(jedis.get(keyMaxPublicationDate))
+                .map(str -> parseDate(str))
+                .ifPresent(v -> post.setMaxPublicationDate(v));
+
         return post;
     }
 

@@ -104,8 +104,10 @@ public class Rss2Twitter {
                 .filter(post -> post.getPublicationCount() == 0)
                 .findFirst();
         if (!res.isPresent()) {
+            ZonedDateTime now = ZonedDateTime.now();
             res = posts.stream()
                     .filter(post -> post.getPublicationCount() < maxPublications)
+                    .filter(post -> post.getMaxPublicationDate() == null || post.getMaxPublicationDate().isAfter(now))
                     .sorted(Comparator.comparing(Post::getLastPublicationDate))
                     .findFirst();
         }
