@@ -1,0 +1,16 @@
+containers:
+
+  redis:
+    image: redis:latest
+    run:
+      volume: ["/root/rss2twitter/data:/data"]
+      publish: ["6379:6379"]
+      cmd: "redis-server --appendonly yes"
+      detach: true
+
+  rss2twitter:
+    dockerfile: .
+    image: ippontech/rss2twitter
+    run:
+      link: ["redis:redis"]
+      detach: true

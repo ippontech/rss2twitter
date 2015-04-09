@@ -1,0 +1,12 @@
+redis:
+  image: redis:latest
+  command: redis-server --appendonly yes
+  volumes:
+  - /root/rss2twitter/data:/data
+  ports:
+  - "6379:6379"
+
+rss2twitter:
+  build: .
+  links:
+  - redis
